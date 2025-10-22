@@ -27,7 +27,7 @@ Hooks.on("renderActorSheet", (app: ActorSheet, html: JQuery, data: any) => {
 
   // Quando clicar, abre a calculadora
   button.on("click", () => {
-    const appCalc = new CalculatorApp();
+    const appCalc = new CalculatorApp(app.actor);
     appCalc.render(true);
   });
 

@@ -24,6 +24,11 @@ const COST_TABLE: Record<number, number> = {
 };
 
 export class CalculatorApp extends Application {
+
+  constructor(private targetActor?: Actor) {
+  super();
+  }
+
   // Estado inicial dos atributos
   attributes: Record<string, AttributeData> = {
     for: { label: "Força", value: 0, racial: 0, bonus: 0, total: 0, cost: 0 },
@@ -100,18 +105,33 @@ export class CalculatorApp extends Application {
 
   // Aplica valores ao ator selecionado
   async applyToActor() {
-    const actor = canvas.tokens.controlled[0]?.actor;
-    if (!actor) {
-      ui.notifications?.warn("Selecione um token para aplicar os valores!");
-      return;
-    }
-
-    const updates: Record<string, number> = {};
-    for (const [key, data] of Object.entries(this.attributes)) {
-      updates[`system.abilities.${key}.value`] = data.total;
-    }
-
-    await actor.update(updates);
-    ui.notifications?.info("Atributos aplicados ao personagem!");
+  // 1️⃣ Determina o ator
+  const actor = this.targetActor ?? canvas.tokens.controlled[0]?.actor;
+  if (!actor) {
+    ui.notifications?.warn("Nenhum personagem selecionado ou associado à calculadora!");
+    return;
   }
+
+  // 2️⃣ Confirmação
+  const confirmed = await Dialog.confirm({
+    title: "Confirmar Aplicação",
+    content: `<p>Deseja aplicar os valores na ficha de <b>${actor.name}</b>?</p>`,
+    yes: () => true,
+    no: () => false,
+    defaultYes: false,
+  });
+
+  if (!confirmed) return;
+
+  // 3️⃣ Monta atualização apenas com o campo Valor
+  const updates: Record<string, number> = {};
+  for (const [key, data] of Object.entries(this.attributes)) {
+    updates[`system.atributos.${key}.base`] = data.value;
+  }
+
+  // 4️⃣ Aplica e notifica
+  await actor.update(updates);
+  ui.notifications?.info(`Atributos aplicados com sucesso em ${actor.name}!`);
+}
+
 }
