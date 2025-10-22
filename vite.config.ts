@@ -2,22 +2,22 @@ import { defineConfig } from "vite";
 import path from "path";
 
 export default defineConfig({
-  base: "./",
+  publicDir: "public",
   build: {
-    outDir: "dist",
+    outDir: "/mnt/c/Users/cryst/AppData/Local/FoundryVTT/Data/modules/t20calc",
     emptyOutDir: true,
     rollupOptions: {
-      input: "src/module.ts",
+      input: path.resolve(__dirname, "src/entry.ts"),
       output: {
         entryFileNames: "module.js",
-        format: "iife", // Foundry usa script direto no browser
-        name: "T20PointsCalculator"
-      }
-    }
+        format: "iife",
+        name: "T20Calc",
+      },
+    },
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
-    }
-  }
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 });
