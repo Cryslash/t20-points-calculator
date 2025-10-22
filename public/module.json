@@ -22,7 +22,7 @@
 
   "url": "https://github.com/Cryslash/t20-points-calculator",
   "manifest": "https://raw.githubusercontent.com/Cryslash/t20-points-calculator/main/public/module.json",  
-  "download": "https://github.com/Cryslash/t20-points-calculator/archive/refs/heads/main.zip",
+  "download": "https://github.com/Cryslash/t20-points-calculator/releases/latest/download/t20calc.zip",
   "readme": "README.md",
   "license": "MIT",
 
