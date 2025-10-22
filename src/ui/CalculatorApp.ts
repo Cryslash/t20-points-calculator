@@ -105,14 +105,14 @@ export class CalculatorApp extends Application {
 
   // Aplica valores ao ator selecionado
   async applyToActor() {
-  // 1️⃣ Determina o ator
+  //Determina o ator
   const actor = this.targetActor ?? canvas.tokens.controlled[0]?.actor;
   if (!actor) {
     ui.notifications?.warn("Nenhum personagem selecionado ou associado à calculadora!");
     return;
   }
 
-  // 2️⃣ Confirmação
+  //Confirmação
   const confirmed = await Dialog.confirm({
     title: "Confirmar Aplicação",
     content: `<p>Deseja aplicar os valores na ficha de <b>${actor.name}</b>?</p>`,
@@ -123,13 +123,13 @@ export class CalculatorApp extends Application {
 
   if (!confirmed) return;
 
-  // 3️⃣ Monta atualização apenas com o campo Valor
+  //Monta atualização apenas com o campo Valor
   const updates: Record<string, number> = {};
   for (const [key, data] of Object.entries(this.attributes)) {
     updates[`system.atributos.${key}.base`] = data.value;
   }
 
-  // 4️⃣ Aplica e notifica
+  //Aplica e notifica
   await actor.update(updates);
   ui.notifications?.info(`Atributos aplicados com sucesso em ${actor.name}!`);
 }
