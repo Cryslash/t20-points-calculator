@@ -9,7 +9,7 @@ Hooks.once("ready", () => {
     app.render(true);
   };
 
-  ui.notifications?.info("Calculadora T20 carregada! Use t20calc() no console para abrir.");
+  // ui.notifications?.info("Calculadora T20 carregada! Use t20calc() no console para abrir.");
 });
 
 Hooks.on("renderActorSheet", (app: ActorSheet, html: JQuery, data: any) => {
