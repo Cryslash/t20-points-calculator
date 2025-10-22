@@ -1,0 +1,18 @@
+{
+  "name": "t20-pontos-calculator",
+  "title": "Calculadora de Compra de Pontos (Tormenta20)",
+  "description": "Calculadora de compra de pontos do Tormenta20 integrada ao Foundry VTT.",
+  "version": "0.1.0",
+  "author": "Crystofher Lins",
+  "minimumCoreVersion": "11",
+  "compatibleCoreVersion": "11",
+  "scripts": [
+    "module.js"
+  ],
+  "styles": [],
+  "esmodules": [],
+  "packs": [],
+  "manifest": "modules/t20-points-calculator/module.json",
+  "download": "",
+  "url": "https://github.com/Cryslash/t20-points-calculator"
+}
