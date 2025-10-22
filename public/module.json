@@ -1,16 +1,46 @@
 {
   "id": "t20calc",
   "title": "Calculadora T20",
-  "description": "Calculadora de compra de pontos para Tormenta20",
-  "version": "0.0.1",
-  "esmodules": ["module.js"],
+  "description": "Calculadora de compra de pontos para personagens de Tormenta20.",
+  "version": "1.0.0",
+
+  "authors": [
+    {
+      "name": "Crystofher Lins",
+      "email": "",
+      "url": "https://portfolio-react-five-tawny.vercel.app/"
+    }
+  ],
+
   "compatibility": {
     "minimum": "13",
-    "verified": "13"
+    "verified": "13.350",
+    "maximum": "14"
   },
-    "authors": [
-    {
-      "name": "Crystofher Lins"
-    }
-  ]
+
+  "esmodules": ["module.js"],  
+
+  "url": "https://github.com/Cryslash/t20-points-calculator",
+  "manifest": "https://raw.githubusercontent.com/Cryslash/t20-points-calculator/refs/heads/main/public/module.json",  
+  "download": "https://github.com/Cryslash/t20-points-calculator/archive/refs/heads/main.zip",
+  "readme": "README.md",
+  "license": "MIT",
+
+  "bugs": {
+    "url": "https://github.com/Cryslash/t20-points-calculator/issues"
+  },
+
+  "dependencies": [],
+  "relationships": {
+    "systems": [
+      {
+        "id": "tormenta20",
+        "type": "system",
+        "compatibility": {
+          "minimum": "13",
+          "verified": "13.350"
+        }
+      }
+    ]
+  }
 }
