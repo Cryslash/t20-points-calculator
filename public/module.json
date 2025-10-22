@@ -37,8 +37,8 @@
         "id": "tormenta20",
         "type": "system",
         "compatibility": {
-          "minimum": "13",
-          "verified": "13.350"
+          "minimum": "1.5.001",
+          "verified": "1.5.012"
         }
       }
     ]
