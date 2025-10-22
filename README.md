@@ -43,6 +43,7 @@ https://raw.githubusercontent.com/Cryslash/t20-points-calculator/main/public/mod
 ### 🖐️ Instalação Manual
 1. Baixe o arquivo `.zip` da [última release](https://github.com/Cryslash/t20-points-calculator/releases/latest).
 2. Extraia o conteúdo na pasta:
+<FoundryData>/Data/modules/t20calc
 3. Reinicie o Foundry e ative o módulo em:
 Configurações > Gerenciar Módulos
 
