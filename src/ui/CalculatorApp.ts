@@ -172,11 +172,14 @@ export class CalculatorApp extends Application {
     //Monta atualização apenas com o campo Valor
     const updates: Record<string, number> = {};
     for (const [key, data] of Object.entries(this.attributes)) {
-      updates[`system.atributos.${key}.base`] = data.value;
+      updates[`system.atributos.${key}.base`] = data.value + data.bonus;
+      updates[`system.atributos.${key}.racial`] = data.racial;
     }
 
     //Aplica e notifica
     await actor.update(updates);
     ui.notifications?.info(`Atributos aplicados com sucesso em ${actor.name}!`);
+
+    this.close();
   }
 }
