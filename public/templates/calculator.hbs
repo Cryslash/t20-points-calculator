@@ -1,8 +1,13 @@
-<div class="t20calc-app">
+<div class='t20calc-app'>
   <h2>Calculadora de Pontos — Tormenta20</h2>
 
-  <table class="t20-table" style="width:100%; border-collapse:collapse; text-align:center;">
-    <thead>
+  <table
+    class='t20-table'
+    style='width:100%; border-collapse:collapse; text-align:center;'
+  >
+    <thead
+      style='text-align: center; vertical-align: middle; line-height: 1.4;'
+    >
       <tr>
         <th>Atributo</th>
         <th>Valor</th>
@@ -13,23 +18,46 @@
       </tr>
     </thead>
     <tbody>
-  {{#each attributes}}
-  <tr>
-    <td>{{this.label}}</td>
-    <td><input type="number" value="{{this.value}}" data-attr="{{this.key}}" data-field="value" style="width:50px;"></td>
-    <td><input type="number" value="{{this.racial}}" data-attr="{{this.key}}" data-field="racial" style="width:50px;"></td>
-    <td><input type="number" value="{{this.bonus}}" data-attr="{{this.key}}" data-field="bonus" style="width:50px;"></td>
-    <td><span class="total" data-attr="{{this.key}}" style="display:inline-block; width:50px; background-color:#676660;
-     color:white; text-align:center; border:1px solid #555; border-radius:4px; padding:2px 0;">{{this.total}}</span></td>
-    <td class="cost" data-attr="{{this.key}}">{{this.cost}}</td>
-  </tr>
-  {{/each}}
-</tbody>
+      {{#each attributes}}
+        <tr>
+          <td>{{this.label}}</td>
+          <td><input
+              type='number'
+              value='{{this.value}}'
+              data-attr='{{this.key}}'
+              data-field='value'
+              style='width:50px;'
+            /></td>
+          <td><input
+              type='number'
+              value='{{this.racial}}'
+              data-attr='{{this.key}}'
+              data-field='racial'
+              style='width:50px;'
+            /></td>
+          <td><input
+              type='number'
+              value='{{this.bonus}}'
+              data-attr='{{this.key}}'
+              data-field='bonus'
+              style='width:50px;'
+            /></td>
+          <td><span
+              class='total'
+              data-attr='{{this.key}}'
+              style='display:inline-block; width:50px; background-color:#676660;
+     color:white; text-align:center; border:1px solid #555; border-radius:4px; padding:2px 0;'
+            >{{this.total}}</span></td>
+          <td class='cost' data-attr='{{this.key}}'>{{this.cost}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
   </table>
 
-  <hr>
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <h3>Pontos Restantes: <span id="remaining" style="font-weight:bold;">{{remaining}}</span></h3>
-    <button type="button" class="apply" disabled>Aplicar na Ficha</button>
+  <hr />
+  <div style='display:flex; justify-content:space-between; align-items:center;'>
+    <h3>Pontos Restantes:
+      <span id='remaining' style='font-weight:bold;'>{{remaining}}</span></h3>
+    <button type='button' class='apply' disabled>Aplicar na Ficha</button>
   </div>
 </div>
