@@ -91,13 +91,15 @@ export class CalculatorApp extends Application {
   activateListeners(html: JQuery) {
     super.activateListeners(html);
 
+    const inputs = html.find("input[type='number']");
+
     // Seleciona o texto inteiro ao focar em um input numérico
-    html.find("input[type='number']").on('focus', function () {
+    inputs.on('focus', function () {
       (this as HTMLInputElement).select();
     });
 
     // Se o campo ficar vazio ao perder o foco, define como 0
-    html.find("input[type='number']").on('blur', function () {
+    inputs.on('blur', function () {
       const input = this as HTMLInputElement;
       if (input.value.trim() === '') {
         input.value = '0';
@@ -106,7 +108,7 @@ export class CalculatorApp extends Application {
     });
 
     // Atualiza valores quando qualquer input mudar
-    html.find('input').on('input', ev => {
+    inputs.on('input', ev => {
       const input = ev.currentTarget as HTMLInputElement;
       const attr = input.dataset.attr!;
       const field = input.dataset.field as AttributeField;
@@ -132,6 +134,40 @@ export class CalculatorApp extends Application {
 
       const applyButton = html.find('button.apply');
       applyButton.prop('disabled', remaining !== 0);
+    });
+
+    // Navegação com TAB vertical (Shift+Tab pra cima)
+    inputs.on('keydown', function (event) {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+
+        const current = inputs.index(this);
+        const columns = 3; // número de colunas editáveis (valor, raça, bônus)
+        const rows = inputs.length / columns; // número de linhas da tabela
+        const row = Math.floor(current / columns);
+        const col = current % columns;
+        let next;
+
+        if (event.shiftKey) {
+          // SHIFT+TAB → sobe uma linha
+          if (row > 0) {
+            next = (row - 1) * columns + col;
+          } else {
+            // se está na primeira linha → vai pra última da coluna anterior
+            next = (rows - 1) * columns + ((col - 1 + columns) % columns);
+          }
+        } else {
+          // TAB → desce uma linha
+          if (row < rows - 1) {
+            next = (row + 1) * columns + col;
+          } else {
+            // se está na última linha → vai pra primeira da próxima coluna
+            next = 0 * columns + ((col + 1) % columns);
+          }
+        }
+
+        (inputs[next] as HTMLInputElement).focus();
+      }
     });
 
     // Aplicar valores na ficha
