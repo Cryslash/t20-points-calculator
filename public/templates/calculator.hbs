@@ -1,13 +1,21 @@
-<div class='t20calc-app'>
-  <h2>Calculadora de Pontos — Tormenta20</h2>
+<section class='t20calc'>
+  <header class='t20calc__header'>
+    <div class='t20calc__points'>
+      Pontos Restantes:
+      <span id='remaining'>{{remaining}}</span>
+    </div>
+    <div class='t20calc__actions'>
+      <button class='icon t20calc__apply' title='Aplicar na Ficha' disabled>
+        <i class='fas fa-check'></i>
+      </button>
+      <button class='icon t20calc__reset' title='Resetar'>
+        <i class='fas fa-rotate-left'></i>
+      </button>
+    </div>
+  </header>
 
-  <table
-    class='t20-table'
-    style='width:100%; border-collapse:collapse; text-align:center;'
-  >
-    <thead
-      style='text-align: center; vertical-align: middle; line-height: 1.4;'
-    >
+  <table class='t20calc__table'>
+    <thead>
       <tr>
         <th>Atributo</th>
         <th>Valor</th>
@@ -19,45 +27,49 @@
     </thead>
     <tbody>
       {{#each attributes}}
-        <tr>
+        <tr data-attr='{{this.key}}'>
           <td>{{this.label}}</td>
           <td><input
               type='number'
+              min='-1'
+              max='4'
               value='{{this.value}}'
               data-attr='{{this.key}}'
               data-field='value'
-              style='width:50px;'
             /></td>
           <td><input
               type='number'
               value='{{this.racial}}'
               data-attr='{{this.key}}'
               data-field='racial'
-              style='width:50px;'
             /></td>
           <td><input
               type='number'
               value='{{this.bonus}}'
               data-attr='{{this.key}}'
               data-field='bonus'
-              style='width:50px;'
             /></td>
-          <td><span
+          <td><input
               class='total'
+              type='number'
+              value='{{this.total}}'
               data-attr='{{this.key}}'
-              style='display:inline-block; width:50px; background-color:#676660;
-     color:white; text-align:center; border:1px solid #555; border-radius:4px; padding:2px 0;'
-            >{{this.total}}</span></td>
+              readonly
+            /></td>
           <td class='cost' data-attr='{{this.key}}'>{{this.cost}}</td>
         </tr>
       {{/each}}
     </tbody>
   </table>
 
-  <hr />
-  <div style='display:flex; justify-content:space-between; align-items:center;'>
-    <h3>Pontos Restantes:
-      <span id='remaining' style='font-weight:bold;'>{{remaining}}</span></h3>
-    <button type='button' class='apply' disabled>Aplicar na Ficha</button>
+  <div class='t20calc__age'>
+    <div class='row'>
+      <span class='label'>Envelhecimento:</span>
+      <label class='check'><input id='idade-maduro' type='checkbox' />
+        <span>Maduro</span></label>
+      <label class='check'><input id='idade-velho' type='checkbox' />
+        <span>Velho</span></label>
+    </div>
+    <p id='idade-info' class='muted'>Nenhum bônus de idade aplicado.</p>
   </div>
-</div>
+</section>

@@ -1,0 +1,111 @@
+.t20calc {
+  font-family: var(--font-primary);
+}
+
+.t20calc__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #a02d2a;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.t20calc__points {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.t20calc__points #remaining {
+  margin-left: 4px;
+  font-weight: 700;
+  color: black;
+}
+
+.t20calc__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.t20calc__actions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 6px;
+  transition: transform 0.1s ease, opacity 0.2s;
+}
+
+.t20calc__actions button:hover {
+  transform: scale(1.2);
+}
+
+.t20calc__actions .t20calc__apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.t20calc__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+
+.t20calc__table th {
+  background: #3b3b3b;
+  color: #fff;
+  text-align: center;
+  padding: 4px 6px;
+}
+
+.t20calc__table td {
+  text-align: center;
+  padding: 2px 4px;
+  vertical-align: middle;
+}
+
+.t20calc__table input[type='number'] {
+  width: 54px;
+  text-align: center;
+}
+
+.t20calc__table input.total {
+  width: 54px;
+  text-align: center;
+  background: #3b3b3b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.t20calc__age {
+  margin-top: 10px;
+  border-top: 1px solid #c9c3b6;
+  padding-top: 6px;
+  text-align: center;
+}
+
+.t20calc__age .row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.t20calc__age .label {
+  font-weight: bold;
+}
+
+.t20calc__age .check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.muted {
+  color: #7a7a7a;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
