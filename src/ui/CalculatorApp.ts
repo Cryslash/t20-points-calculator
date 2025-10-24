@@ -1,9 +1,9 @@
 /// <reference types="@league-of-foundry-developers/foundry-vtt-types" />
+import '../../public/styles/t20calc.css';
+
 declare const foundry: any;
 
-// Tipos fortes para as propriedades de cada atributo
 type AttributeField = 'value' | 'racial' | 'bonus' | 'total' | 'cost';
-
 type AttributeData = {
   label: string;
   value: number;
@@ -11,9 +11,9 @@ type AttributeData = {
   bonus: number;
   total: number;
   cost: number;
+  _ageBonus?: number;
 };
 
-// Tabela de custo conforme regras definidas
 const COST_TABLE: Record<number, number> = {
   [-1]: -1,
   [0]: 0,
@@ -28,7 +28,6 @@ export class CalculatorApp extends Application {
     super();
   }
 
-  // Estado inicial dos atributos
   attributes: Record<string, AttributeData> = {
     for: { label: 'Força', value: 0, racial: 0, bonus: 0, total: 0, cost: 0 },
     des: {
@@ -78,123 +77,210 @@ export class CalculatorApp extends Application {
   }
 
   getData() {
-    const remaining = this.getRemainingPoints();
     return {
       attributes: Object.entries(this.attributes).map(([key, data]) => ({
         key,
         ...data,
       })),
-      remaining,
+      remaining: this.getRemainingPoints(),
     };
+  }
+
+  private updateAttribute(attr: string, html: JQuery) {
+    const d = this.attributes[attr];
+    d.total = d.value + d.racial + d.bonus;
+    d.cost = COST_TABLE[d.value] ?? 0;
+    html.find(`input.total[data-attr='${attr}']`).val(String(d.total)); // Corrigido!
+    html.find(`.cost[data-attr='${attr}']`).text(String(d.cost));
+  }
+
+  private refreshRemaining(html: JQuery) {
+    const remaining = this.getRemainingPoints();
+    html
+      .find('#remaining')
+      .text(remaining)
+      .css('color', remaining < 0 ? 'red' : 'black');
+    html.find('.t20calc__apply').prop('disabled', remaining !== 0);
   }
 
   activateListeners(html: JQuery) {
     super.activateListeners(html);
 
-    const inputs = html.find("input[type='number']");
+    const inputs = html.find('input[data-field]');
 
-    // Seleciona o texto inteiro ao focar em um input numérico
-    inputs.on('focus', function () {
+    // Foco seleciona tudo
+    html.on('focus', 'input[data-field]', function () {
       (this as HTMLInputElement).select();
     });
 
-    // Se o campo ficar vazio ao perder o foco, define como 0
-    inputs.on('blur', function () {
-      const input = this as HTMLInputElement;
-      if (input.value.trim() === '') {
-        input.value = '0';
-        $(input).trigger('change'); // garante atualização dos cálculos
+    // Ao sair vazio = 0
+    html.on('blur', 'input[data-field]', ev => {
+      const el = ev.currentTarget as HTMLInputElement;
+      if (!el.value.trim()) {
+        el.value = '0';
+        $(el).trigger('input');
       }
     });
 
-    // Atualiza valores quando qualquer input mudar
-    inputs.on('input', ev => {
-      const input = ev.currentTarget as HTMLInputElement;
-      const attr = input.dataset.attr!;
-      const field = input.dataset.field as AttributeField;
-      const val = parseInt(input.value) || 0;
+    // Atualiza campos
+    html.on('input', 'input[data-field]', ev => {
+      const el = ev.currentTarget as HTMLInputElement;
+      const attr = el.dataset.attr!;
+      const field = el.dataset.field as AttributeField;
+      const val = parseInt(el.value) || 0;
 
-      // Atualiza o campo certo
       this.attributes[attr][field] = val;
-
-      // Atualiza total e custo
-      const data = this.attributes[attr];
-      data.total = data.value + data.racial + data.bonus;
-      data.cost = COST_TABLE[data.value] ?? 0;
-
-      // Atualiza DOM
-      html.find(`.total[data-attr='${attr}']`).text(data.total.toString());
-      html.find(`.cost[data-attr='${attr}']`).text(data.cost);
-
-      // Atualiza pontos restantes e botão
-      const remaining = this.getRemainingPoints();
-      const span = html.find('#remaining');
-      span.text(remaining.toString());
-      span.css('color', remaining < 0 ? 'red' : 'black');
-
-      const applyButton = html.find('button.apply');
-      applyButton.prop('disabled', remaining !== 0);
+      this.updateAttribute(attr, html);
+      this.refreshRemaining(html);
     });
 
-    // Navegação com TAB vertical (Shift+Tab pra cima)
-    inputs.on('keydown', function (event) {
-      if (event.key === 'Tab') {
-        event.preventDefault();
+    // Navegação vertical (Tab e Shift+Tab)
+    html.on('keydown', 'input[data-field]', function (event) {
+      if (event.key !== 'Tab') return;
+      event.preventDefault();
 
-        const current = inputs.index(this);
-        const columns = 3; // número de colunas editáveis (valor, raça, bônus)
-        const rows = inputs.length / columns; // número de linhas da tabela
-        const row = Math.floor(current / columns);
-        const col = current % columns;
-        let next;
+      const current = inputs.index(this);
+      const cols = 3;
+      const rows = inputs.length / cols;
+      const row = Math.floor(current / cols);
+      const col = current % cols;
 
-        if (event.shiftKey) {
-          // SHIFT+TAB → sobe uma linha
-          if (row > 0) {
-            next = (row - 1) * columns + col;
-          } else {
-            // se está na primeira linha → vai pra última da coluna anterior
-            next = (rows - 1) * columns + ((col - 1 + columns) % columns);
-          }
-        } else {
-          // TAB → desce uma linha
-          if (row < rows - 1) {
-            next = (row + 1) * columns + col;
-          } else {
-            // se está na última linha → vai pra primeira da próxima coluna
-            next = 0 * columns + ((col + 1) % columns);
-          }
+      const next = event.shiftKey
+        ? row > 0
+          ? (row - 1) * cols + col
+          : (rows - 1) * cols + ((col - 1 + cols) % cols)
+        : row < rows - 1
+        ? (row + 1) * cols + col
+        : (col + 1) % cols;
+      (inputs[next] as HTMLInputElement)?.focus();
+    });
+
+    // Envelhecimento
+    const applyAge = () => {
+      for (const k in this.attributes) {
+        const d = this.attributes[k];
+        if (d._ageBonus) d.bonus -= d._ageBonus;
+        d._ageBonus = 0;
+      }
+
+      const mad = html.find('#idade-maduro').prop('checked');
+      const vel = html.find('#idade-velho').prop('checked');
+
+      let modF = 0,
+        modM = 0;
+      if (mad) {
+        modF -= 1;
+        modM += 1;
+      }
+      if (vel) {
+        modF -= 2;
+        modM += 1;
+      }
+
+      const applyBonus = (keys: string[], mod: number) => {
+        for (const k of keys) {
+          const d = this.attributes[k];
+          d.bonus += mod;
+          d._ageBonus = mod;
+          html
+            .find(`input[data-attr='${k}'][data-field='bonus']`)
+            .val(String(d.bonus));
+          this.updateAttribute(k, html);
         }
+      };
 
-        (inputs[next] as HTMLInputElement).focus();
+      applyBonus(['for', 'des', 'con'], modF);
+      applyBonus(['int', 'sab', 'car'], modM);
+
+      const info = html.find('#idade-info');
+      info.text(
+        !mad && !vel
+          ? 'Nenhum bônus de idade aplicado.'
+          : vel
+          ? 'Bônus de idade aplicado: Físicos –3, Mentais/Sociais +2.'
+          : 'Bônus de idade aplicado: Físicos –1, Mentais/Sociais +1.',
+      );
+      this.refreshRemaining(html);
+    };
+
+    html.on('change', '#idade-maduro', () => {
+      if (!html.find('#idade-maduro').prop('checked'))
+        html.find('#idade-velho').prop('checked', false);
+      applyAge();
+    });
+
+    html.on('change', '#idade-velho', () => {
+      if (html.find('#idade-velho').prop('checked'))
+        html.find('#idade-maduro').prop('checked', true);
+      applyAge();
+    });
+
+    // Botão reset
+    html.on('click', '.t20calc__reset', async () => {
+      const confirmed = await Dialog.confirm({
+        title: 'Confirmar Reset',
+        content: `<p>Tem certeza que deseja <b>resetar todos os valores</b> da calculadora?</p>`,
+        yes: () => true,
+        no: () => false,
+        defaultYes: false,
+      });
+
+      if (!confirmed) return;
+
+      for (const k in this.attributes) {
+        const d: any = this.attributes[k];
+        d.value = 0;
+        d.racial = 0;
+        d.bonus = 0;
+        d.total = 0;
+        d.cost = 0;
+        d._ageBonus = 0;
+        html.find(`input[data-attr='${k}'][data-field='value']`).val('0');
+        html.find(`input[data-attr='${k}'][data-field='racial']`).val('0');
+        html.find(`input[data-attr='${k}'][data-field='bonus']`).val('0');
+        html.find(`.total[data-attr='${k}']`).val('0');
+        html.find(`.cost[data-attr='${k}']`).text('0');
+      }
+
+      (html.find('#idade-maduro') as JQuery<HTMLInputElement>).prop(
+        'checked',
+        false,
+      );
+      (html.find('#idade-velho') as JQuery<HTMLInputElement>).prop(
+        'checked',
+        false,
+      );
+      html.find('#idade-info').text('Nenhum bônus de idade aplicado.');
+      html.find('#remaining').text('10').css('color', 'black');
+      html.find('.t20calc__apply').prop('disabled', true);
+
+      ui.notifications?.info('Calculadora resetada com sucesso!');
+    });
+
+    // Botão Aplicar
+    html.on('click', '.t20calc__apply', async () => {
+      const applied = await this.applyToActor();
+
+      // Só fecha se o método retornar explicitamente true
+      if (applied === true) {
+        this.close();
       }
     });
-
-    // Aplicar valores na ficha
-    html.find('button.apply').on('click', () => this.applyToActor());
   }
 
-  // Calcula pontos restantes
-  getRemainingPoints(): number {
-    const totalCost = Object.values(this.attributes).reduce(
-      (a, b) => a + b.cost,
-      0,
+  getRemainingPoints() {
+    return (
+      10 - Object.values(this.attributes).reduce((sum, a) => sum + a.cost, 0)
     );
-    return 10 - totalCost;
   }
 
-  // Aplica valores ao ator selecionado
   async applyToActor() {
-    //Determina o ator
     const actor = this.targetActor ?? canvas.tokens.controlled[0]?.actor;
     if (!actor) {
-      ui.notifications?.warn(
-        'Nenhum personagem selecionado ou associado à calculadora!',
-      );
-      return;
+      ui.notifications?.warn('Nenhum personagem selecionado!');
+      return false;
     }
 
-    //Confirmação
     const confirmed = await Dialog.confirm({
       title: 'Confirmar Aplicação',
       content: `<p>Deseja aplicar os valores na ficha de <b>${actor.name}</b>?</p>`,
@@ -203,19 +289,19 @@ export class CalculatorApp extends Application {
       defaultYes: false,
     });
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      // jogador clicou “Não”
+      return false;
+    }
 
-    //Monta atualização apenas com o campo Valor
     const updates: Record<string, number> = {};
     for (const [key, data] of Object.entries(this.attributes)) {
       updates[`system.atributos.${key}.base`] = data.value + data.bonus;
       updates[`system.atributos.${key}.racial`] = data.racial;
     }
 
-    //Aplica e notifica
     await actor.update(updates);
     ui.notifications?.info(`Atributos aplicados com sucesso em ${actor.name}!`);
-
-    this.close();
+    return true;
   }
 }
