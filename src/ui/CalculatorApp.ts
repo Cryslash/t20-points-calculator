@@ -90,7 +90,7 @@ export class CalculatorApp extends Application {
     const d = this.attributes[attr];
     d.total = d.value + d.racial + d.bonus;
     d.cost = COST_TABLE[d.value] ?? 0;
-    html.find(`input.total[data-attr='${attr}']`).val(String(d.total)); // Corrigido!
+    html.find(`input.total[data-attr='${attr}']`).val(String(d.total));
     html.find(`.cost[data-attr='${attr}']`).text(String(d.cost));
   }
 
@@ -122,12 +122,36 @@ export class CalculatorApp extends Application {
       }
     });
 
-    // Atualiza campos
     html.on('input', 'input[data-field]', ev => {
       const el = ev.currentTarget as HTMLInputElement;
       const attr = el.dataset.attr!;
       const field = el.dataset.field as AttributeField;
-      const val = parseInt(el.value) || 0;
+      const raw = el.value.trim();
+
+      // Permite digitar vazio ou "-"
+      if (raw === '' || raw === '-') return;
+
+      let val = parseInt(raw);
+      if (isNaN(val)) return; // não atualiza enquanto é inválido
+
+      this.attributes[attr][field] = val;
+      this.updateAttribute(attr, html);
+      this.refreshRemaining(html);
+    });
+
+    // Limita o valor entre -1 e 4 apenas ao sair do campo
+    html.on('blur', 'input[data-field]', ev => {
+      const el = ev.currentTarget as HTMLInputElement;
+      const attr = el.dataset.attr!;
+      const field = el.dataset.field as AttributeField;
+
+      let val = parseInt(el.value);
+      if (isNaN(val)) val = 0;
+
+      if (field === 'value') {
+        val = Math.max(-1, Math.min(4, val)); // tranca o intervalo
+        el.value = String(val);
+      }
 
       this.attributes[attr][field] = val;
       this.updateAttribute(attr, html);
@@ -197,8 +221,8 @@ export class CalculatorApp extends Application {
         !mad && !vel
           ? 'Nenhum bônus de idade aplicado.'
           : vel
-          ? 'Bônus de idade aplicado: Físicos –3, Mentais/Sociais +2.'
-          : 'Bônus de idade aplicado: Físicos –1, Mentais/Sociais +1.',
+          ? 'Bônus de idade aplicado: Físicos -3, Mentais/Sociais +2.'
+          : 'Bônus de idade aplicado: Físicos -1, Mentais/Sociais +1.',
       );
       this.refreshRemaining(html);
     };
