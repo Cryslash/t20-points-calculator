@@ -2,7 +2,7 @@
   "id": "t20calc",
   "title": "Calculadora T20",
   "description": "Calculadora de compra de pontos para personagens de Tormenta20.",
-  "version": "1.0.1",
+  "version": "1.1.0",
 
   "authors": [
     {
@@ -19,6 +19,7 @@
   },
 
   "esmodules": ["module.js"],
+  "styles": ["styles/t20calc.css"],
 
   "url": "https://github.com/Cryslash/t20-points-calculator",
   "manifest": "https://raw.githubusercontent.com/Cryslash/t20-points-calculator/main/public/module.json",
@@ -30,7 +31,6 @@
     "url": "https://github.com/Cryslash/t20-points-calculator/issues"
   },
 
-  "dependencies": [],
   "relationships": {
     "systems": [
       {
